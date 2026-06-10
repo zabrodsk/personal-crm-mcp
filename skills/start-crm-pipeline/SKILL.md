@@ -50,19 +50,23 @@ Relevant MCP tools:
    - Partiful: call `submit_partiful_intake(event_name, partiful_url, max_items?, timeout_seconds?, run_label?, run_slug?)`.
    - Preserve default caps unless the user gives explicit alternatives.
 
-4. Report a friendly started card.
-   - Use `run_label` as the operator-facing `Run ID`.
+4. Wait for a people count, then report a friendly started card.
    - Map source labels to `CSV`, `Lu.ma`, `Brella`, or `Partiful`.
-   - Show process state as `Process: Active`, `Process: Not active`, or `Process: Unknown`; do not show raw `pid` or `alive=true`.
+   - Use `Name`, not `Event`, in operator-facing output.
+   - Include `People: <count>` in the initial card. Do not use placeholders like `Counting...`.
+   - If the submit response does not include the count, poll `get_intake_status` briefly until the count is available before sending the initial card.
+   - Estimate total runtime as about `people_count * 1.1` minutes, rounded to a friendly whole-minute range or value.
    - Always include `Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
-   - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `pid`, or raw `alive=true` in normal started/running/completed output.
+   - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `Run ID`, `pid`, `alive=true`, or `Process` in the initial started output.
    - Treat `run_slug`, `pid`, and Mac-mini filesystem paths as maintainer debug metadata only.
 
 5. Track status tersely.
    - Poll with `get_intake_status(run_label=<run_label>)` or `get_intake_status(run_slug=<run_slug>)`.
    - Emit chat updates only when status or process-alive state changes, or at most about once per minute.
-   - Map `process_alive=true` to `Process: Active`, `process_alive=false` to `Process: Not active`, and missing process data to `Process: Unknown`.
-   - Use compact lines like: `Still running: <event_name> | <source_label> | Process: Active | Run ID: <run_label> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
+   - Show the current pipeline step only in check-status output, not in the initial started card.
+   - Derive the current step from MCP status/stage/job/event fields when available; use `Starting` only if no stage is visible yet.
+   - Use friendly step names such as `Collecting attendees`, `Importing`, `Enriching`, `Scoring`, `Deciding`, `Syncing`, `Completed`, or `Failed`.
+   - Use compact lines like: `<name> is still running | <source_label> | Step: <friendly_step> | People: <count> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not paste raw tool payloads.
    - Show Mac-mini paths only when the run failed or the user explicitly asks for debug details.
 
@@ -73,20 +77,27 @@ Started/running response:
 ```text
 Started Personal CRM pipeline
 
-Event: <event_name>
+Name: <name>
 Source: <CSV|Lu.ma|Brella|Partiful>
-Run ID: <run_label>
+People: <count>
+Estimated runtime: about <count * 1.1 rounded> minutes
 Status: Running
-Process: <Active|Not active|Unknown>
 Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
-Next: I'll keep this concise. Ask "check status for <event_name>" later to refresh the run.
+Next: Check status later to see the active pipeline step.
 ```
 
-Compact status update:
+Check status response:
 
 ```text
-Still running: <event_name> | <CSV|Lu.ma|Brella|Partiful> | Process: <Active|Not active|Unknown> | Run ID: <run_label> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
+<name> is still running
+
+Source: <CSV|Lu.ma|Brella|Partiful>
+People: <count>
+Current step: <Collecting attendees|Importing|Enriching|Scoring|Deciding|Syncing|Starting>
+Estimated runtime: about <count * 1.1 rounded> minutes total
+Status: Running
+Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 ```
 
 Completed response:
@@ -94,14 +105,14 @@ Completed response:
 ```text
 Personal CRM pipeline completed
 
-Event: <event_name>
+Name: <name>
 Source: <CSV|Lu.ma|Brella|Partiful>
-Run ID: <run_label>
+People processed: <count>
+Runtime: <actual runtime if available; otherwise omit>
 Status: Completed
-Process: Not active
 Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
-Result: Submitted to Personal CRM. Include counts only if the MCP status returns them.
+Result: Submitted to Personal CRM.
 ```
 
 Failed response:
@@ -109,11 +120,11 @@ Failed response:
 ```text
 Personal CRM pipeline failed
 
-Event: <event_name>
+Name: <name>
 Source: <CSV|Lu.ma|Brella|Partiful>
-Run ID: <run_label>
+People: <count if available>
+Current step: <friendly_step if available>
 Status: Failed
-Process: <Not active|Unknown>
 Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
 Reason: <short MCP/status error if available>
@@ -121,7 +132,7 @@ Maintainer debug: <log_path>
 Next: Ask a maintainer to inspect the log path.
 ```
 
-For explicit debug requests, include `run_slug` as `Debug ID` and include the relevant Mac-mini paths. Do not show debug fields in normal operator output.
+For explicit debug requests, include `run_label` as `Run ID`, include `run_slug` as `Debug ID`, and include the relevant Mac-mini paths. Do not show debug fields in normal operator output.
 
 ## Relationship To Other Skills
 
