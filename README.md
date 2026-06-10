@@ -10,88 +10,40 @@ MCP endpoint:
 https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
 ```
 
-## Install By OS
+## Install
 
 Before starting, make sure:
 
 1. You are already connected to the right tailnet.
 2. Codex, Claude Code, Cursor, or another MCP-capable app is installed.
 
-### macOS
+### macOS / Linux
 
-Download this repo:
+Run one command:
 
 ```bash
-git clone https://github.com/zabrodsk/personal-crm-mcp.git
-cd personal-crm-mcp
+curl -fsSL https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main/install.sh | bash
 ```
 
-No `git`: open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open Terminal in the unzipped folder.
+This installs the bundled Codex skill and configures the MCP for Codex or Claude Code when their CLIs are available.
 
-Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
+### Windows PowerShell
 
-```bash
-bash scripts/install-codex.sh
+Run one command:
+
+```powershell
+irm https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main/install.ps1 | iex
 ```
 
-Add the MCP to Claude Code:
+This installs the bundled Codex skill and configures the MCP for Codex or Claude Code when their CLIs are available.
+
+### Manual MCP Commands
+
+If you only want to add the MCP manually:
 
 ```bash
+codex mcp add personal-crm-intake --url https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
 claude mcp add --transport http --scope user personal-crm-intake https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
-```
-
-Then run `/mcp` inside Claude Code and confirm `personal-crm-intake` is connected.
-
-### Linux
-
-Download this repo:
-
-```bash
-git clone https://github.com/zabrodsk/personal-crm-mcp.git
-cd personal-crm-mcp
-```
-
-No `git`: open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open a terminal in the unzipped folder.
-
-Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
-
-```bash
-bash scripts/install-codex.sh
-```
-
-Add the MCP to Claude Code:
-
-```bash
-claude mcp add --transport http --scope user personal-crm-intake https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
-```
-
-### Windows
-
-Download this repo first:
-
-```powershell
-git clone https://github.com/zabrodsk/personal-crm-mcp.git
-cd personal-crm-mcp
-```
-
-If you do not use `git`, open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open PowerShell in the unzipped folder.
-
-Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-codex.ps1
-```
-
-Add the MCP to Claude Code:
-
-```powershell
-claude mcp add --transport http --scope user personal-crm-intake https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
-```
-
-To install only the Codex skill without changing MCP config:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/install-codex-skill.ps1
 ```
 
 ## Use The Skill
@@ -138,7 +90,7 @@ The Clawdbot Mac mini validates the input, stages a run, starts the full Persona
 If the MCP is missing or disconnected:
 
 1. Confirm you are connected to the right tailnet.
-2. Re-run `scripts/install-codex.sh`, `scripts/install-codex.ps1`, or the Claude MCP add command for your AI app.
+2. Re-run the one-command installer for your OS.
 3. In Claude Code, run `/mcp`.
 4. In Codex, run `codex mcp list`.
 
