@@ -56,6 +56,8 @@ Submit an attached CSV:
 Use $start-crm-pipeline with the attached CSV. Event name: SaaStr 2026.
 ```
 
+If you omit the event name, the skill infers a readable name from the file or event URL.
+
 Submit a Lu.ma event:
 
 ```text

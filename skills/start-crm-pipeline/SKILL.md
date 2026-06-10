@@ -30,7 +30,12 @@ Relevant MCP tools:
    - If missing, report: connect Tailscale, add/check `personal-crm-intake` at the official MCP URL, then retry.
 
 2. Validate the user input before submitting.
-   - Require `event_name`; if absent, ask only for the event name.
+   - Prefer a user-provided `event_name` when present.
+   - If `event_name` is missing, infer it without prompting:
+     - CSV: derive it from the attached/opened filename.
+     - Lu.ma, Brella, or Partiful: derive it from the event URL slug/path.
+     - Normalize the inferred name into a readable title by removing extensions, IDs, query strings, dates when they are only run noise, and separators like `_`, `-`, and `%20`; title-case ordinary words while preserving known acronyms.
+     - Use a fallback like `Personal CRM Intake` only when there is no usable filename or URL slug.
    - CSV: read the attached/opened CSV text, verify UTF-8-compatible content, size under 25 MB when knowable, a non-empty header, and at least one non-empty data row.
    - Lu.ma: accept only `lu.ma`, `www.lu.ma`, `luma.com`, `www.luma.com`, or any host ending in `.lu.ma`.
    - Brella: accept only `brella.io`, `www.brella.io`, or any host ending in `.brella.io`.
