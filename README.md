@@ -12,10 +12,10 @@ https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
 
 ## Install By OS
 
-You need two things:
+Before starting, make sure:
 
-1. Tailscale connected to the right tailnet.
-2. The MCP server added to your AI app.
+1. You are already connected to the right tailnet.
+2. Codex, Claude Code, Cursor, or another MCP-capable app is installed.
 
 ### macOS
 
@@ -27,15 +27,6 @@ cd personal-crm-mcp
 ```
 
 No `git`: open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open Terminal in the unzipped folder.
-
-Install Tailscale:
-
-```bash
-brew install --cask tailscale
-open -a Tailscale
-```
-
-Then sign in and confirm Tailscale is connected.
 
 Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
 
@@ -62,13 +53,6 @@ cd personal-crm-mcp
 
 No `git`: open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open a terminal in the unzipped folder.
 
-Install Tailscale:
-
-```bash
-curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up
-```
-
 Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
 
 ```bash
@@ -91,14 +75,6 @@ cd personal-crm-mcp
 ```
 
 If you do not use `git`, open `https://github.com/zabrodsk/personal-crm-mcp`, download the ZIP, unzip it, and open PowerShell in the unzipped folder.
-
-Install Tailscale with PowerShell:
-
-```powershell
-winget install Tailscale.Tailscale
-```
-
-Open Tailscale, sign in, and confirm it is connected.
 
 Install for Codex. This adds the MCP and installs the bundled `$start-crm-pipeline` skill:
 
@@ -161,7 +137,7 @@ The Clawdbot Mac mini validates the input, stages a run, starts the full Persona
 
 If the MCP is missing or disconnected:
 
-1. Confirm Tailscale is running and connected.
+1. Confirm you are connected to the right tailnet.
 2. Re-run `scripts/install-codex.sh`, `scripts/install-codex.ps1`, or the Claude MCP add command for your AI app.
 3. In Claude Code, run `/mcp`.
 4. In Codex, run `codex mcp list`.
