@@ -1,4 +1,4 @@
 interface:
   display_name: "Start CRM Pipeline"
   short_description: "Submit Personal CRM runs through MCP"
-  default_prompt: "Use $start-crm-pipeline to submit a CSV, Lu.ma link, or Brella link through the Personal CRM MCP on the Clawdbot Mac mini, track status tersely, and return a clear receipt."
+  default_prompt: "Use $start-crm-pipeline to submit a CSV, Lu.ma, Brella, or Partiful link through the Personal CRM MCP on the Clawdbot Mac mini, track status tersely, and return a clear receipt."

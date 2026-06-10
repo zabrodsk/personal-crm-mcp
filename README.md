@@ -2,7 +2,7 @@
 
 Operator setup for the Personal CRM intake MCP on the Clawdbot Mac mini.
 
-Use this when you want Codex, Claude Code, Cursor, or GitHub Copilot to submit a CSV, Lu.ma link, or Brella link into the Personal CRM pipeline without cloning the private pipeline repo or running local commands.
+Use this when you want Codex, Claude Code, Cursor, or GitHub Copilot to submit a CSV, Lu.ma link, Brella link, or Partiful link into the Personal CRM pipeline without cloning the private pipeline repo or running local commands.
 
 MCP endpoint:
 
@@ -68,6 +68,12 @@ Submit a Brella event:
 Use $start-crm-pipeline for this Brella event: https://panathenea.brella.io/events/... Event name: Panathenea.
 ```
 
+Submit a Partiful event:
+
+```text
+Use $start-crm-pipeline for this Partiful event: https://partiful.com/e/... Event name: Demo Party.
+```
+
 Check status:
 
 ```text
@@ -81,6 +87,7 @@ The MCP exposes these tools:
 - `submit_csv_intake`
 - `submit_luma_intake`
 - `submit_brella_intake`
+- `submit_partiful_intake`
 - `get_intake_status`
 
 The Clawdbot Mac mini validates the input, stages a run, starts the full Personal CRM pipeline, writes intake/export metadata, and returns run status. Operators should not run Python, Docker, Postgres, `make`, or local pipeline commands.
@@ -96,6 +103,6 @@ If the MCP is missing or disconnected:
 
 If a CSV is rejected, use a UTF-8 CSV under 25 MB with headers and at least one data row.
 
-If a Lu.ma or Brella URL is rejected, use the original event URL from the supported host.
+If a Lu.ma, Brella, or Partiful URL is rejected, use the original event URL from the supported host.
 
 If a run fails, ask a maintainer to inspect the `log_path` returned by `get_intake_status`.

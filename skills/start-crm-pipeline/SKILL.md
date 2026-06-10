@@ -1,6 +1,6 @@
 ---
 name: start-crm-pipeline
-description: Project-local Personal CRM operator workflow for starting or checking CSV, Lu.ma, and Brella pipeline runs through the connected personal-crm-intake MCP only. Use inside the personal-crm repository when the user says start CRM pipeline, use the MCP, submit an attached CSV or event link, check Personal CRM status, or track a Personal CRM MCP run from Codex, Claude, Cursor, or another MCP-connected agent.
+description: Project-local Personal CRM operator workflow for starting or checking CSV, Lu.ma, Brella, and Partiful pipeline runs through the connected personal-crm-intake MCP only. Use inside the personal-crm repository when the user says start CRM pipeline, use the MCP, submit an attached CSV or event link, check Personal CRM status, or track a Personal CRM MCP run from Codex, Claude, Cursor, or another MCP-connected agent.
 ---
 
 # Start CRM Pipeline
@@ -20,12 +20,13 @@ Relevant MCP tools:
 - `submit_csv_intake`
 - `submit_luma_intake`
 - `submit_brella_intake`
+- `submit_partiful_intake`
 - `get_intake_status`
 
 ## Workflow
 
 1. Preflight the MCP connection.
-   - Confirm the `personal-crm-intake` server or the four intake tools are available.
+   - Confirm the `personal-crm-intake` server or the intake tools are available.
    - If missing, report: connect Tailscale, add/check `personal-crm-intake` at the official MCP URL, then retry.
 
 2. Validate the user input before submitting.
@@ -33,12 +34,14 @@ Relevant MCP tools:
    - CSV: read the attached/opened CSV text, verify UTF-8-compatible content, size under 25 MB when knowable, a non-empty header, and at least one non-empty data row.
    - Lu.ma: accept only `lu.ma`, `www.lu.ma`, `luma.com`, `www.luma.com`, or any host ending in `.lu.ma`.
    - Brella: accept only `brella.io`, `www.brella.io`, or any host ending in `.brella.io`.
+   - Partiful: accept only `partiful.com`, `www.partiful.com`, or `go.partiful.com`.
    - Let the MCP be the final validator and report MCP validation errors plainly.
 
 3. Submit through MCP.
    - CSV: call `submit_csv_intake(event_name, csv_content, file_name?, source_name?, source_profile?, run_label?, run_slug?)`.
    - Lu.ma: call `submit_luma_intake(event_name, luma_url, max_items?, max_total_charge_usd?, timeout_seconds?, memory_mb?, run_label?, run_slug?)`.
    - Brella: call `submit_brella_intake(event_name, brella_url, max_items?, timeout_seconds?, run_label?, run_slug?)`.
+   - Partiful: call `submit_partiful_intake(event_name, partiful_url, max_items?, timeout_seconds?, run_label?, run_slug?)`.
    - Preserve default caps unless the user gives explicit alternatives.
 
 4. Report a compact started line.
@@ -57,7 +60,7 @@ End with a compact receipt:
 
 ```text
 Personal CRM MCP receipt
-Input: <csv|luma_url|brella_url>
+Input: <csv|luma_url|brella_url|partiful_url>
 Event: <event_name>
 Run: <run_label>
 Slug: <run_slug>
