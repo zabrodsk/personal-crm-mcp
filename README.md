@@ -22,7 +22,7 @@ Before starting, make sure:
 Run one command:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/zabrodsk/personal-crm-mcp@main/install.sh | bash
 ```
 
 This installs the bundled Codex skill and configures the MCP for Codex or Claude Code when their CLIs are available.
@@ -32,7 +32,7 @@ This installs the bundled Codex skill and configures the MCP for Codex or Claude
 Run one command:
 
 ```powershell
-irm https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main/install.ps1 | iex
+irm https://cdn.jsdelivr.net/gh/zabrodsk/personal-crm-mcp@main/install.ps1 | iex
 ```
 
 This installs the bundled Codex skill and configures the MCP for Codex or Claude Code when their CLIs are available.

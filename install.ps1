@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $McpName = "personal-crm-intake"
 $McpUrl = "https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp"
-$RawBase = if ($env:PERSONAL_CRM_MCP_RAW_BASE) { $env:PERSONAL_CRM_MCP_RAW_BASE } else { "https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main" }
+$RawBase = if ($env:PERSONAL_CRM_MCP_RAW_BASE) { $env:PERSONAL_CRM_MCP_RAW_BASE } else { "https://cdn.jsdelivr.net/gh/zabrodsk/personal-crm-mcp@main" }
 $CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME ".codex" }
 $SkillDir = Join-Path $CodexHome "skills/start-crm-pipeline"
 $AgentsDir = Join-Path $SkillDir "agents"

@@ -3,7 +3,7 @@ set -euo pipefail
 
 MCP_NAME="personal-crm-intake"
 MCP_URL="https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp"
-RAW_BASE="${PERSONAL_CRM_MCP_RAW_BASE:-https://raw.githubusercontent.com/zabrodsk/personal-crm-mcp/main}"
+RAW_BASE="${PERSONAL_CRM_MCP_RAW_BASE:-https://cdn.jsdelivr.net/gh/zabrodsk/personal-crm-mcp@main}"
 CODEX_HOME_DIR="${CODEX_HOME:-"${HOME}/.codex"}"
 SKILL_DIR="${CODEX_HOME_DIR}/skills/start-crm-pipeline"
 
