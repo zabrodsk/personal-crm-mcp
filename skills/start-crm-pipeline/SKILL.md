@@ -49,36 +49,69 @@ Relevant MCP tools:
    - Partiful: call `submit_partiful_intake(event_name, partiful_url, max_items?, timeout_seconds?, run_label?, run_slug?)`.
    - Preserve default caps unless the user gives explicit alternatives.
 
-4. Report a compact started line.
-   - Format: `Started | <input_type> | <run_label> | slug=<run_slug> | pid=<pid or unknown> | endpoint=clawdbot-mac-mini`
-   - Include `log_path` on the next short line when returned.
+4. Report a friendly started card.
+   - Use `run_label` as the operator-facing `Run ID`.
+   - Map source labels to `CSV`, `Lu.ma`, `Brella`, or `Partiful`.
+   - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `pid`, or `alive=true` in normal started/running/completed output.
+   - Treat `run_slug`, `pid`, and Mac-mini filesystem paths as maintainer debug metadata only.
 
 5. Track status tersely.
    - Poll with `get_intake_status(run_label=<run_label>)` or `get_intake_status(run_slug=<run_slug>)`.
    - Emit chat updates only when status or process-alive state changes, or at most about once per minute.
-   - Use compact lines like: `Running | <run_label> | alive=<true/false/unknown> | endpoint=clawdbot-mac-mini`.
-   - Do not paste long logs or raw tool payloads unless the run failed and the user needs the shortest useful excerpt.
+   - Use compact lines like: `Still running: <event_name> | <source_label> | Run ID: <run_label>`.
+   - Do not paste raw tool payloads.
+   - Show Mac-mini paths only when the run failed or the user explicitly asks for debug details.
 
-## Final Receipt
+## Operator Output
 
-End with a compact receipt:
+Started/running response:
 
 ```text
-Personal CRM MCP receipt
-Input: <csv|luma_url|brella_url|partiful_url>
+Started Personal CRM pipeline
+
 Event: <event_name>
-Run: <run_label>
-Slug: <run_slug>
-Status: <status>; alive=<true|false|unknown>
-Endpoint: personal-crm-intake on clawdbot-mac-mini
-Log: <log_path>
-Intake: <intake_dir or manifest_path parent>
-Exports: <export_dir if visible>
-Fallback: deterministic if visible, otherwise unknown
-Next: <done, still running, or ask maintainer to inspect log path>
+Source: <CSV|Lu.ma|Brella|Partiful>
+Run ID: <run_label>
+Status: Running
+
+Next: I'll keep this concise. Ask "check status for <event_name>" later to refresh the run.
 ```
 
-If the run failed or the MCP rejected the request, keep the explanation short: failed stage/category when visible, the log path, and the next action. Do not dump dozens of lines of logs.
+Compact status update:
+
+```text
+Still running: <event_name> | <CSV|Lu.ma|Brella|Partiful> | Run ID: <run_label>
+```
+
+Completed response:
+
+```text
+Personal CRM pipeline completed
+
+Event: <event_name>
+Source: <CSV|Lu.ma|Brella|Partiful>
+Run ID: <run_label>
+Status: Completed
+
+Result: Submitted to Personal CRM. Include counts only if the MCP status returns them.
+```
+
+Failed response:
+
+```text
+Personal CRM pipeline failed
+
+Event: <event_name>
+Source: <CSV|Lu.ma|Brella|Partiful>
+Run ID: <run_label>
+Status: Failed
+
+Reason: <short MCP/status error if available>
+Maintainer debug: <log_path>
+Next: Ask a maintainer to inspect the log path.
+```
+
+For explicit debug requests, include `run_slug` as `Debug ID` and include the relevant Mac-mini paths. Do not show debug fields in normal operator output.
 
 ## Relationship To Other Skills
 
