@@ -10,6 +10,12 @@ MCP endpoint:
 https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp
 ```
 
+Live monitor:
+
+```text
+https://clawdbot--mac-mini.taild9e247.ts.net:8443/
+```
+
 ## Install
 
 Before starting, make sure:

@@ -9,6 +9,7 @@ Use this skill for operator-facing Personal CRM intake through the official MCP.
 
 Official MCP URL: `https://clawdbot--mac-mini.taild9e247.ts.net:8798/mcp`
 Operator-facing endpoint name: `personal-crm-intake` on the Clawdbot Mac mini
+Live monitor: `https://clawdbot--mac-mini.taild9e247.ts.net:8443/`
 
 ## Hard Boundary
 
@@ -52,13 +53,16 @@ Relevant MCP tools:
 4. Report a friendly started card.
    - Use `run_label` as the operator-facing `Run ID`.
    - Map source labels to `CSV`, `Lu.ma`, `Brella`, or `Partiful`.
-   - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `pid`, or `alive=true` in normal started/running/completed output.
+   - Show process state as `Process: Active`, `Process: Not active`, or `Process: Unknown`; do not show raw `pid` or `alive=true`.
+   - Always include `Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
+   - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `pid`, or raw `alive=true` in normal started/running/completed output.
    - Treat `run_slug`, `pid`, and Mac-mini filesystem paths as maintainer debug metadata only.
 
 5. Track status tersely.
    - Poll with `get_intake_status(run_label=<run_label>)` or `get_intake_status(run_slug=<run_slug>)`.
    - Emit chat updates only when status or process-alive state changes, or at most about once per minute.
-   - Use compact lines like: `Still running: <event_name> | <source_label> | Run ID: <run_label>`.
+   - Map `process_alive=true` to `Process: Active`, `process_alive=false` to `Process: Not active`, and missing process data to `Process: Unknown`.
+   - Use compact lines like: `Still running: <event_name> | <source_label> | Process: Active | Run ID: <run_label> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not paste raw tool payloads.
    - Show Mac-mini paths only when the run failed or the user explicitly asks for debug details.
 
@@ -73,6 +77,8 @@ Event: <event_name>
 Source: <CSV|Lu.ma|Brella|Partiful>
 Run ID: <run_label>
 Status: Running
+Process: <Active|Not active|Unknown>
+Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
 Next: I'll keep this concise. Ask "check status for <event_name>" later to refresh the run.
 ```
@@ -80,7 +86,7 @@ Next: I'll keep this concise. Ask "check status for <event_name>" later to refre
 Compact status update:
 
 ```text
-Still running: <event_name> | <CSV|Lu.ma|Brella|Partiful> | Run ID: <run_label>
+Still running: <event_name> | <CSV|Lu.ma|Brella|Partiful> | Process: <Active|Not active|Unknown> | Run ID: <run_label> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 ```
 
 Completed response:
@@ -92,6 +98,8 @@ Event: <event_name>
 Source: <CSV|Lu.ma|Brella|Partiful>
 Run ID: <run_label>
 Status: Completed
+Process: Not active
+Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
 Result: Submitted to Personal CRM. Include counts only if the MCP status returns them.
 ```
@@ -105,6 +113,8 @@ Event: <event_name>
 Source: <CSV|Lu.ma|Brella|Partiful>
 Run ID: <run_label>
 Status: Failed
+Process: <Not active|Unknown>
+Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
 Reason: <short MCP/status error if available>
 Maintainer debug: <log_path>
