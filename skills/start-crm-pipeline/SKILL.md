@@ -32,11 +32,13 @@ Relevant MCP tools:
 
 2. Validate the user input before submitting.
    - Prefer a user-provided `event_name` when present.
-   - If `event_name` is missing, infer it without prompting:
+   - If `event_name` is missing, infer it conservatively:
      - CSV: derive it from the attached/opened filename.
-     - Lu.ma, Brella, or Partiful: derive it from the event URL slug/path.
+     - Lu.ma, Brella, or Partiful: derive it from the event URL slug/path only when the slug contains readable event words.
      - Normalize the inferred name into a readable title by removing extensions, IDs, query strings, dates when they are only run noise, and separators like `_`, `-`, and `%20`; title-case ordinary words while preserving known acronyms.
-     - Use a fallback like `Personal CRM Intake` only when there is no usable filename or URL slug.
+     - Treat opaque URL IDs such as `p5336zo5`, `evt_123`, UUIDs, or short alphanumeric hashes as unusable names.
+     - If a Lu.ma, Brella, or Partiful URL has no readable event name, stop and ask the operator for the event/conference name before submitting.
+     - Use a fallback like `Personal CRM Intake` only for CSV submissions when there is no usable filename or explicit source name.
    - CSV: read the attached/opened CSV text, verify UTF-8-compatible content, size under 25 MB when knowable, a non-empty header, and at least one non-empty data row.
    - Lu.ma: accept only `lu.ma`, `www.lu.ma`, `luma.com`, `www.luma.com`, or any host ending in `.lu.ma`.
    - Brella: accept only `brella.io`, `www.brella.io`, or any host ending in `.brella.io`.
@@ -54,7 +56,9 @@ Relevant MCP tools:
    - Map source labels to `CSV`, `Lu.ma`, `Brella`, or `Partiful`.
    - Use `Name`, not `Event`, in operator-facing output.
    - Include `People: <count>` in the initial card. Do not use placeholders like `Counting...`.
-   - If the submit response does not include the count, poll `get_intake_status` briefly until the count is available before sending the initial card.
+   - Prefer counts from imported/collected attendees. If the MCP has not imported yet, use `people_expected` from the submit/status response.
+   - If `people_count_source=max_items_cap`, show `People: up to <count>` and base the estimate on that cap.
+   - If the submit response does not include `people_count`, `people_expected`, or another usable attendee count, poll `get_intake_status` briefly until a count is available before sending the initial card.
    - Estimate total runtime as about `people_count * 1.1` minutes, rounded to a friendly whole-minute range or value.
    - Always include `Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `Run ID`, `pid`, `alive=true`, or `Process` in the initial started output.
@@ -66,6 +70,8 @@ Relevant MCP tools:
    - Show the current pipeline step only in check-status output, not in the initial started card.
    - Derive the current step from MCP status/stage/job/event fields when available; use `Starting` only if no stage is visible yet.
    - Use friendly step names such as `Collecting attendees`, `Importing`, `Enriching`, `Scoring`, `Deciding`, `Syncing`, `Completed`, or `Failed`.
+   - For check-status runtime math, compute elapsed time from `started_at`/`created_at` in the MCP payload to the current time. Do not infer remaining work from a stage count or a nonexistent "people remaining" field.
+   - Show total estimate as `people_count * 1.1` minutes. When useful, add `Elapsed: <elapsed>` and `Remaining estimate: about max(total_estimate - elapsed, 0)` while the run is active.
    - Use compact lines like: `<name> is still running | <source_label> | Step: <friendly_step> | People: <count> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not paste raw tool payloads.
    - Show Mac-mini paths only when the run failed or the user explicitly asks for debug details.
@@ -96,6 +102,8 @@ Source: <CSV|Lu.ma|Brella|Partiful>
 People: <count>
 Current step: <Collecting attendees|Importing|Enriching|Scoring|Deciding|Syncing|Starting>
 Estimated runtime: about <count * 1.1 rounded> minutes total
+Elapsed: <elapsed time since started_at/created_at, if available>
+Remaining estimate: about <max(total estimate - elapsed, 0) rounded>
 Status: Running
 Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 ```

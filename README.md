@@ -62,7 +62,7 @@ Submit an attached CSV:
 Use $start-crm-pipeline with the attached CSV. Event name: SaaStr 2026.
 ```
 
-If you omit the event name, the skill infers a readable name from the file or event URL.
+If you omit the event name, the skill infers a readable name from the file or a readable event URL slug. For opaque event URLs such as short IDs, provide the real event/conference name.
 The started message shows the name, source, people count, estimated runtime, status, and live monitor. Check-status messages add the active pipeline step.
 
 Submit a Lu.ma event:
