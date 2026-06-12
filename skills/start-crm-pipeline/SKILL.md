@@ -55,11 +55,12 @@ Relevant MCP tools:
 4. Wait for a people count, then report a friendly started card.
    - Map source labels to `CSV`, `Lu.ma`, `Brella`, or `Partiful`.
    - Use `Name`, not `Event`, in operator-facing output.
-   - Include `People: <count>` in the initial card. Do not use placeholders like `Counting...`.
-   - Prefer counts from imported/collected attendees. If the MCP has not imported yet, use `people_expected` from the submit/status response.
-   - If `people_count_source=max_items_cap`, show `People: up to <count>` and base the estimate on that cap.
-   - If the submit response does not include `people_count`, `people_expected`, or another usable attendee count, poll `get_intake_status` briefly until a count is available before sending the initial card.
-   - Estimate total runtime as about `people_count * 1.1` minutes, rounded to a friendly whole-minute range or value.
+   - For CSV, include `People: <people_count>` immediately.
+   - For Lu.ma, Brella, and Partiful, `people_expected` and `people_count_source=max_items_cap` are only scrape caps, not actual attendee counts.
+   - Do not display `People: up to <max_items>` as the people count, and do not base the runtime estimate on a scrape cap.
+   - For URL sources, poll `get_intake_status` until the MCP returns `people_count` with a real source such as `items_collected`, `source_csv_rows`, `csv_rows`, or `people_promoted`, or until the run reaches `completed` or `failed`.
+   - If a URL source is still collecting and no actual count exists yet, show `People: collecting` and omit the runtime estimate instead of guessing from the cap.
+   - Estimate total runtime as about `people_count * 1.1` minutes only when `people_count` is an actual observed count, rounded to a friendly whole-minute range or value.
    - Always include `Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not show `Endpoint`, `Log`, `Intake`, `Exports`, `Slug`, `Run ID`, `pid`, `alive=true`, or `Process` in the initial started output.
    - Treat `run_slug`, `pid`, and Mac-mini filesystem paths as maintainer debug metadata only.
@@ -67,12 +68,14 @@ Relevant MCP tools:
 5. Track status tersely.
    - Poll with `get_intake_status(run_label=<run_label>)` or `get_intake_status(run_slug=<run_slug>)`.
    - Emit chat updates only when status or process-alive state changes, or at most about once per minute.
+   - Treat the MCP `status.status` field as authoritative when it is `completed` or `failed`; do not keep saying `Running` just because the original run was started.
+   - If `process_alive=false` and MCP status is `failed`, report the failed template. If MCP status is `completed`, report the completed template.
    - Show the current pipeline step only in check-status output, not in the initial started card.
    - Derive the current step from MCP status/stage/job/event fields when available; use `Starting` only if no stage is visible yet.
    - Use friendly step names such as `Collecting attendees`, `Importing`, `Enriching`, `Scoring`, `Deciding`, `Syncing`, `Completed`, or `Failed`.
    - For check-status runtime math, compute elapsed time from `started_at`/`created_at` in the MCP payload to the current time. Do not infer remaining work from a stage count or a nonexistent "people remaining" field.
-   - Show total estimate as `people_count * 1.1` minutes. When useful, add `Elapsed: <elapsed>` and `Remaining estimate: about max(total_estimate - elapsed, 0)` while the run is active.
-   - Use compact lines like: `<name> is still running | <source_label> | Step: <friendly_step> | People: <count> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
+   - Show total estimate as `people_count * 1.1` minutes only when `people_count` is actual. When useful, add `Elapsed: <elapsed>` and `Remaining estimate: about max(total_estimate - elapsed, 0)` while the run is active.
+   - Use compact running lines like: `<name> is still running | <source_label> | Step: <friendly_step> | People: <actual count or collecting> | Monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/`.
    - Do not paste raw tool payloads.
    - Show Mac-mini paths only when the run failed or the user explicitly asks for debug details.
 
@@ -86,7 +89,7 @@ Started Personal CRM pipeline
 Name: <name>
 Source: <CSV|Lu.ma|Brella|Partiful>
 People: <count>
-Estimated runtime: about <count * 1.1 rounded> minutes
+Estimated runtime: about <count * 1.1 rounded> minutes, omit until URL attendee count is actual
 Status: Running
 Live monitor: https://clawdbot--mac-mini.taild9e247.ts.net:8443/
 
@@ -101,7 +104,7 @@ Check status response:
 Source: <CSV|Lu.ma|Brella|Partiful>
 People: <count>
 Current step: <Collecting attendees|Importing|Enriching|Scoring|Deciding|Syncing|Starting>
-Estimated runtime: about <count * 1.1 rounded> minutes total
+Estimated runtime: about <count * 1.1 rounded> minutes total, omit until URL attendee count is actual
 Elapsed: <elapsed time since started_at/created_at, if available>
 Remaining estimate: about <max(total estimate - elapsed, 0) rounded>
 Status: Running
